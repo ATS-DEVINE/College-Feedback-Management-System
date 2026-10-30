@@ -73,9 +73,23 @@ The backend API will be available at http://localhost:5000
 
 ## Deployment
 
-### Vercel Deployment
+### Vercel Multi-Service Deployment
 
-This project is configured for deployment on Vercel with both frontend and backend deployed together.
+This project is configured for deployment on Vercel using multi-service architecture, where the frontend and backend are deployed as separate services under a single project.
+
+**Service Configuration:**
+- **backend**: Express.js API service (internal, accessible via /api/* routes)
+- **frontend**: React frontend service (public, handles all other routes)
+
+**Routing:**
+- `/api/*` → Routes to backend service
+- `/*` → Routes to frontend service
+
+**Service Bindings:**
+- Frontend has a binding to backend via `BACKEND_URL` environment variable
+- This allows the frontend to call the backend internally without exposing it publicly
+
+### Deployment Steps
 
 1. **Push to GitHub**:
    - Ensure your code is pushed to the GitHub repository
@@ -84,24 +98,20 @@ This project is configured for deployment on Vercel with both frontend and backe
    - Go to [vercel.com](https://vercel.com)
    - Click "Add New Project"
    - Import your GitHub repository
-   - Vercel will automatically detect the `vercel.json` configuration
+   - Vercel will automatically detect the `vercel.json` multi-service configuration
    - Click "Deploy"
 
 3. **Configure Environment Variables in Vercel**:
    - Go to your project settings in Vercel
    - Navigate to Environment Variables
-   - Add the following variables:
+   - Add the following variables (apply to backend service):
      - `MONGODB_URI`: Your MongoDB connection string
      - `JWT_SECRET`: Your JWT secret key
      - `NODE_ENV`: production
 
-4. **Update Frontend Environment Variable**:
-   - After deployment, note your Vercel app URL
-   - Update `frontend/.env.local` with:
-     ```
-     REACT_APP_API_URL=https://your-app-url.vercel.app/api
-     ```
-   - Redeploy to apply changes
+4. **No Frontend Environment Variables Needed**:
+   - The `BACKEND_URL` is automatically injected by Vercel via the service binding
+   - For local development, you can still use `REACT_APP_API_URL` in `.env.local`
 
 ### Environment Variables
 
